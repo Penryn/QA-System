@@ -1,10 +1,11 @@
 package admin
 
 import (
-	"QA-System/internal/pkg/code"
-	"QA-System/internal/service"
-	"QA-System/internal/pkg/utils"
+	"QA-System/internal/dao"
 	"QA-System/internal/global/config"
+	"QA-System/internal/pkg/code"
+	"QA-System/internal/pkg/utils"
+	"QA-System/internal/service"
 	"errors"
 	"fmt"
 	"math"
@@ -25,7 +26,7 @@ type CreateSurveyData struct {
 	Img       string                  `json:"img" `
 	Status    int                     `json:"status" `
 	Time      string                  `json:"time"`
-	Questions []service.Question `json:"questions"`
+	Questions []dao.Question `json:"questions"`
 }
 
 func CreateSurvey(c *gin.Context) {
@@ -117,7 +118,7 @@ type UpdateSurveyData struct {
 	Desc      string                  `json:"desc" `
 	Img       string                  `json:"img" `
 	Time      string                  `json:"time"`
-	Questions []service.Question `json:"questions"`
+	Questions []dao.Question `json:"questions"`
 }
 
 func UpdateSurvey(c *gin.Context) {
@@ -302,7 +303,7 @@ func GetAllSurvey(c *gin.Context) {
 	response := make([]interface{}, 0)
 	var totalPageNum *int64
 	if user.AdminType == 2 {
-		response, totalPageNum = service.GetAllSurvey(data.PageNum, data.PageSize, data.Title)
+		response, totalPageNum,err = service.GetAllSurvey(data.PageNum, data.PageSize, data.Title)
 		if err != nil {
 			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
 			utils.JsonErrorResponse(c, code.ServerError)
@@ -354,7 +355,7 @@ type SurveyData struct {
 	Time      string                 `json:"time"`
 	Desc      string                 `json:"desc"`
 	Img       string                 `json:"img"`
-	Questions []service.Question `json:"questions"`
+	Questions []dao.Question `json:"questions"`
 }
 
 // 管理员获取问卷题面

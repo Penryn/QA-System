@@ -1,10 +1,11 @@
 package user
 
 import (
-	"QA-System/internal/service"
-	"QA-System/internal/pkg/utils"
+	"QA-System/internal/dao"
 	"QA-System/internal/global/config"
 	"QA-System/internal/pkg/code"
+	"QA-System/internal/pkg/utils"
+	"QA-System/internal/service"
 	"errors"
 
 	"image/jpeg"
@@ -25,7 +26,7 @@ import (
 
 type SubmitServeyData struct {
 	ID            int                         `json:"id" binding:"required"`
-	QuestionsList []service.QuestionsList `json:"questions_list"`
+	QuestionsList []dao.QuestionsList `json:"questions_list"`
 }
 
 func SubmitSurvey(c *gin.Context) {
@@ -119,7 +120,7 @@ type SurveyData struct {
 	Time      string                 `json:"time"`
 	Desc      string                 `json:"desc"`
 	Img       string                 `json:"img"`
-	Questions []service.Question `json:"questions"`
+	Questions []dao.Question `json:"questions"`
 }
 
 // 用户获取问卷
