@@ -16,8 +16,8 @@ import (
 
 var Logger *zap.Logger
 var zapStacktraceMutex sync.Mutex
-var logDir   string
-
+var LogDir string
+var LogName string
 
 type Config struct {
 	Development       bool
@@ -48,13 +48,10 @@ const (
 	// WriterFile 文件输出
 	WriterFile = "file"
 
-	logSuffix      = ".log"
-	warnLogSuffix  = "_warn.log"
-	errorLogSuffix = "_error.log"
+	LogSuffix      = ".log"
+	WarnLogSuffix  = "_warn.log"
+	ErrorLogSuffix = "_error.log"
 )
-
-
-
 
 const (
 	RotateTimeDaily  = "daily"
@@ -79,16 +76,16 @@ func loadConfig() *Config {
 func ZapInit() {
 	cfg := loadConfig()
 
-	logDir = cfg.LoggerDir
-	if strings.HasSuffix(logDir, "/") {
-		logDir = strings.TrimRight(logDir, "/")
+	LogDir = cfg.LoggerDir
+	LogName = cfg.Name
+	if strings.HasSuffix(LogDir, "/") {
+		LogDir = strings.TrimRight(LogDir, "/")
 	}
 
 	if err := os.MkdirAll(cfg.LoggerDir, 0755); err != nil {
 		zap.S().Error("创建日志目录失败:", err)
 		return
 	}
-
 
 	var encoderCfg zapcore.EncoderConfig
 	if cfg.Development {
@@ -156,9 +153,8 @@ func getLoggerLevel(cfg *Config) zapcore.Level {
 	return level
 }
 
-
 func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, LogSuffix))
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
@@ -166,7 +162,7 @@ func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, LogSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
@@ -174,7 +170,7 @@ func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, warnLogSuffix))
+	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, WarnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -188,7 +184,7 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	errorWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, errorLogSuffix))
+	errorWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, ErrorLogSuffix))
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -202,15 +198,15 @@ func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Optio
 }
 
 func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
-    logFullPath := filename
-    rotationPolicy := cfg.LogRollingPolicy
-    backupCount := cfg.LogBackupCount
+	logFullPath := filename
+	rotationPolicy := cfg.LogRollingPolicy
+	backupCount := cfg.LogBackupCount
 
-    var (
-        rotateDuration time.Duration
-        timeFormat     string
-    )
-    if rotationPolicy == RotateTimeHourly {
+	var (
+		rotateDuration time.Duration
+		timeFormat     string
+	)
+	if rotationPolicy == RotateTimeHourly {
 		rotateDuration = time.Hour
 		timeFormat = ".%Y%m%d%H"
 	} else if rotationPolicy == RotateTimeDaily {
@@ -218,20 +214,19 @@ func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 		timeFormat = ".%Y%m%d"
 	}
 
-    hook, err := rotatelogs.New(
-        logFullPath+time.Now().Format(timeFormat), 
-        rotatelogs.WithLinkName(logFullPath),
-        rotatelogs.WithRotationCount(backupCount),
-        rotatelogs.WithRotationTime(rotateDuration),
-    )
+	hook, err := rotatelogs.New(
+		logFullPath+time.Now().Format(timeFormat),
+		rotatelogs.WithLinkName(logFullPath),
+		rotatelogs.WithRotationCount(backupCount),
+		rotatelogs.WithRotationTime(rotateDuration),
+	)
 
-    if err != nil {
-        zap.S().Error("Failed to initialize log rotation:", err)
-        panic(err)
-    }
-    return hook
+	if err != nil {
+		zap.S().Error("Failed to initialize log rotation:", err)
+		panic(err)
+	}
+	return hook
 }
-
 
 func GetLogFile(filename string, suffix string) string {
 	return ConcatString(global.Config.GetString("log.loggerDir"), "/", filename, suffix)

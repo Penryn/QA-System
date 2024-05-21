@@ -4,6 +4,7 @@ import (
 	"QA-System/internal/dao"
 	global "QA-System/internal/global/config"
 	"QA-System/internal/models"
+	"QA-System/internal/pkg/log"
 	"QA-System/internal/pkg/utils"
 	"bufio"
 	"encoding/json"
@@ -507,11 +508,11 @@ func openLogFile(logType int) (*os.File, error) {
 	var filePath string
 	switch logType {
 	case 1:
-		filePath = "./logs/app_error.log"
+		filePath = log.LogDir + "/" + log.LogName + log.ErrorLogSuffix
 	case 2:
-		filePath = "./logs/app_warn.log"
+		filePath = log.LogDir + "/" + log.LogName + log.WarnLogSuffix
 	case 3, 4:
-		filePath = "./logs/app.log"
+		filePath = log.LogDir + "/" + log.LogName + log.LogSuffix
 	}
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -526,9 +527,9 @@ func openLogFile(logType int) (*os.File, error) {
 // 打开所有相关的日志文件
 func openAllLogFiles() ([]*os.File, error) {
 	filePaths := []string{
-		"./logs/app.log",
-		"./logs/app_error.log",
-		"./logs/app_warn.log",
+		log.LogDir + "/" + log.LogName + log.LogSuffix,
+		log.LogDir + "/" + log.LogName + log.ErrorLogSuffix,
+		log.LogDir + "/" + log.LogName + log.WarnLogSuffix,
 	}
 
 	var openFiles []*os.File
