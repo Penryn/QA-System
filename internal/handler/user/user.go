@@ -2,7 +2,6 @@ package user
 
 import (
 	"QA-System/internal/dao"
-	"QA-System/internal/global/config"
 	"QA-System/internal/pkg/code"
 	"QA-System/internal/pkg/utils"
 	"QA-System/internal/service"
@@ -312,7 +311,7 @@ func UploadImg(c *gin.Context) {
 		}
 	}
 
-	urlHost := global.Config.GetString("url.host")
+	urlHost := service.GetConfigUrl()
 	url := urlHost + "/public/static/" + filename
 
 	utils.JsonSuccessResponse(c, url)

@@ -42,3 +42,12 @@
 {"L":"INFO","T":"2024-05-21T23:07:07.208+0800","M":"Logger initialized","serviceName":"app"}
 {"L":"INFO","T":"2024-05-21T23:07:07.241+0800","M":"Connected to MySQL","serviceName":"app"}
 {"L":"INFO","T":"2024-05-21T23:07:07.658+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:20:16.170+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:20:16.207+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:20:16.731+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:21:09.195+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:21:09.231+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:21:09.641+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:36:28.475+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:36:28.514+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:36:28.993+0800","M":"Connected to MongoDB","serviceName":"app"}

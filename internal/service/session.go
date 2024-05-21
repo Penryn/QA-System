@@ -11,6 +11,7 @@ import (
 )
 
 
+
 func SetUserSession(c *gin.Context, user *models.User) error {
 	webSession := sessions.Default(c)
 	webSession.Options(sessions.Options{

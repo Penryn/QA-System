@@ -2,7 +2,6 @@ package admin
 
 import (
 	"QA-System/internal/dao"
-	"QA-System/internal/global/config"
 	"QA-System/internal/pkg/code"
 	"QA-System/internal/pkg/utils"
 	"QA-System/internal/service"
@@ -579,5 +578,5 @@ func DownloadFile(c *gin.Context) {
 		return
 	}
 
-	utils.JsonSuccessResponse(c, global.Config.GetString("url.host")+"/public/xlsx/"+fileName)
+	utils.JsonSuccessResponse(c, service.GetConfigUrl()+"/public/xlsx/"+fileName)
 }

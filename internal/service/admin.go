@@ -2,7 +2,6 @@ package service
 
 import (
 	"QA-System/internal/dao"
-	global "QA-System/internal/global/config"
 	"QA-System/internal/models"
 	"QA-System/internal/pkg/log"
 	"QA-System/internal/pkg/utils"
@@ -125,7 +124,7 @@ func UpdateSurvey(id int, title string, desc string, img string, questions []dao
 		return err
 	}
 	new_imgs = append(new_imgs, imgs...)
-	urlHost := global.Config.GetString("url.host")
+	urlHost := GetConfigUrl()
 	//删除无用图片
 	for _, old_img := range old_imgs {
 		if !contains(new_imgs, old_img) {
@@ -156,7 +155,7 @@ func DeleteSurvey(id int) error {
 	if err != nil {
 		return err
 	}
-	urlHost := global.Config.GetString("url.host")
+	urlHost := GetConfigUrl()
 	for _, img := range imgs {
 		_ = os.Remove("./static/" + strings.TrimPrefix(img, urlHost+"/static/"))
 	}
