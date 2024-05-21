@@ -51,7 +51,6 @@ func CreateSurvey(c *gin.Context) {
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
-	ddlTime = ddlTime.Add(-8 * time.Hour)
 	//创建问卷
 	err = service.CreateSurvey(user.ID, data.Title, data.Desc, data.Img, data.Questions, data.Status, ddlTime)
 	if err != nil {
@@ -168,7 +167,6 @@ func UpdateSurvey(c *gin.Context) {
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
-	ddlTime = ddlTime.Add(-8 * time.Hour)
 	//修改问卷
 	err = service.UpdateSurvey(data.ID, data.Title, data.Desc, data.Img, data.Questions,ddlTime)
 	if err != nil {

@@ -31,3 +31,14 @@ url:
   host: "https://example.com"
 
 key: 
+
+
+log:
+  development: true
+  disableCaller: true
+  disableStacktrace: true
+  encoding: "json"
+  level: "info"
+  name: "qa-service"
+  writers: "console,file"
+  loggerDir: "/logs"
