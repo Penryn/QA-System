@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"QA-System/internal/global/config"
 	"QA-System/internal/models"
 	"QA-System/internal/pkg/code"
 	"QA-System/internal/pkg/utils"
@@ -57,7 +56,7 @@ func Login(c *gin.Context) {
 type RegisterData struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	Key      int    `json:"key" binding:"required"`
+	Key      string    `json:"key" binding:"required"`
 }
 
 // 注册
@@ -70,7 +69,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	//判断是否有权限
-	adminKey := global.Config.GetInt("key")
+	adminKey := service.GetConfigKey()
 	if adminKey != data.Key {
 		c.Error(&gin.Error{Err: errors.New("没有权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NotSuperAdmin)

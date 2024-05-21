@@ -27,6 +27,14 @@ func GetConfigUrl() string {
 	return url
 }
 
+func GetConfigKey() string {
+	key := GetRedis("key")
+	if key == "" {
+		key=global.Config.GetString("key")
+		SetRedis("key", key)
+	}
+	return key
+}
 
 
 func SetRedis(key string, value string) bool {
