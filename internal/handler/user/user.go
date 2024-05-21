@@ -33,31 +33,31 @@ func SubmitSurvey(c *gin.Context) {
 	var data SubmitServeyData
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取参数失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	// 判断问卷问题和答卷问题数目是否一致
 	survey, err := service.GetSurveyByID(data.ID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问卷失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	questions, err := service.GetQuestionsBySurveyID(survey.ID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问题失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	if len(questions) != len(data.QuestionsList) {
-		c.Error(errors.New("问题数目不一致"))
+		c.Error(&gin.Error{Err: errors.New("问题数量不一致"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	// 判断填写时间是否在问卷有效期内
 	if !survey.Deadline.IsZero() && survey.Deadline.Before(time.Now()) {
-		c.Error(errors.New("填写时间已过"))
+		c.Error(&gin.Error{Err: errors.New("填写时间已过"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.TimeBeyondError)
 		return
 	}
@@ -65,23 +65,23 @@ func SubmitSurvey(c *gin.Context) {
 	for _, q := range data.QuestionsList {
 		question, err := service.GetQuestionByID(q.QuestionID)
 		if err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("获取问题失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
 		if question.SerialNum != q.SerialNum {
-			c.Error(errors.New("问题序号不一致"))
+			c.Error(&gin.Error{Err: errors.New("问题序号不一致"), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
 		if question.SurveyID != survey.ID {
-			c.Error(errors.New("问题不属于该问卷"))
+			c.Error(&gin.Error{Err: errors.New("问题不属于该问卷"), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
 		// 判断必填字段是否为空
 		if question.Required && q.Answer == "" {
-			c.Error(errors.New("必填字段为空"))
+			c.Error(&gin.Error{Err: errors.New("必填字段为空"), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
@@ -89,12 +89,12 @@ func SubmitSurvey(c *gin.Context) {
 		if question.Unique {
 			unique, err := service.CheckUnique(data.ID, q.QuestionID, question.SerialNum, q.Answer)
 			if err != nil {
-				c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+				c.Error(&gin.Error{Err: errors.New("唯一字段检查失败"), Type: gin.ErrorTypeAny})
 				utils.JsonErrorResponse(c, code.ServerError)
 				return
 			}
 			if !unique {
-				c.Error(errors.New("唯一字段不唯一"))
+				c.Error(&gin.Error{Err: errors.New("唯一字段不唯一"), Type: gin.ErrorTypeAny})
 				utils.JsonErrorResponse(c, code.UniqueError)
 				return
 			}
@@ -104,7 +104,7 @@ func SubmitSurvey(c *gin.Context) {
 	// 提交问卷
 	err = service.SubmitSurvey(data.ID, data.QuestionsList)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("提交问卷失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -128,27 +128,27 @@ func GetSurvey(c *gin.Context) {
 	var data GetSurveyData
 	err := c.ShouldBindQuery(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取参数失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	// 获取问卷
 	survey, err := service.GetSurveyByID(data.ID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问卷失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	// 判断填写时间是否在问卷有效期内
 	if !survey.Deadline.IsZero() && survey.Deadline.Before(time.Now()) {
-		c.Error(errors.New("填写时间已过"))
+		c.Error(&gin.Error{Err: errors.New("填写时间已过"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.TimeBeyondError)
 		return
 	}
 	// 获取相应的问题
 	questions, err := service.GetQuestionsBySurveyID(survey.ID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问题失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -157,7 +157,7 @@ func GetSurvey(c *gin.Context) {
 	for _, question := range questions {
 		options, err := service.GetOptionsByQuestionID(question.ID)
 		if err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("获取选项失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
@@ -188,7 +188,7 @@ func GetSurvey(c *gin.Context) {
 	response := map[string]interface{}{
 		"id":        survey.ID,
 		"title":     survey.Title,
-		"time":      survey.Deadline.Format("2006-01-02 15:04:05"),
+		"time":      survey.Deadline,
 		"desc":      survey.Desc,
 		"img":       survey.Img,
 		"questions": questionsResponse,
@@ -202,30 +202,32 @@ func UploadImg(c *gin.Context) {
 	// 保存图片文件
 	file, err := c.FormFile("img")
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取文件失败"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	// 检查文件类型是否为图像
 	if !isImageFile(file) {
+		c.Error(&gin.Error{Err: errors.New("文件类型不是图片"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PictureError)
 		return
 	}
 	// 检查文件大小是否超出限制
 	if file.Size > 10<<20 { // 10MB，1MB = 1024 * 1024 bytes
+		c.Error(&gin.Error{Err: errors.New("文件大小超出限制"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PictureSizeError)
 		return
 	}
 	// 创建临时目录
 	tempDir, err := os.MkdirTemp("", "tempdir")
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("创建临时目录失败"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	defer func() {
 		if err := os.RemoveAll(tempDir); err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("删除临时目录失败"+err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
@@ -234,13 +236,13 @@ func UploadImg(c *gin.Context) {
 	tempFile := filepath.Join(tempDir, file.Filename)
 	f, err := os.Create(tempFile)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("创建临时文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	defer func() {
 		if err := f.Close(); err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("关闭文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
@@ -248,13 +250,13 @@ func UploadImg(c *gin.Context) {
 	// 将上传的文件保存到临时文件中
 	src, err := file.Open()
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("打开文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	defer func() {
 		if err := src.Close(); err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("关闭文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
@@ -262,14 +264,14 @@ func UploadImg(c *gin.Context) {
 
 	_, err = io.Copy(f, src)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("保存文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	// 判断文件的MIME类型是否为图片
 	mime, err := mimetype.DetectFile(tempFile)
 	if err != nil || !strings.HasPrefix(mime.String(), "image/") {
-		c.Error(errors.New("文件类型错误"))
+		c.Error(&gin.Error{Err: errors.New("文件类型不是图片"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PictureError)
 		return
 	}
@@ -278,7 +280,7 @@ func UploadImg(c *gin.Context) {
 	dst := "./public/static/" + filename
 	err = c.SaveUploadedFile(file, dst)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("保存文件失败"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -287,7 +289,7 @@ func UploadImg(c *gin.Context) {
 	jpgFile := filepath.Join(tempDir, "compressed.jpg")
 	err = convertAndCompressImage(dst, jpgFile)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("转换和压缩图像失败原因:"+err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -297,14 +299,14 @@ func UploadImg(c *gin.Context) {
 	if err != nil {
 		err = copyFile(jpgFile, dst)
 		if err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("替换文件失败原因:"+err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}
 		// Remove the temporary file after copying
 		err = os.Remove(jpgFile)
 		if err != nil {
-			c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+			c.Error(&gin.Error{Err: errors.New("删除临时文件失败原因:"+err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
 			return
 		}

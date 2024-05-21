@@ -1,4 +1,1 @@
-{"level":"warn","ts":"2024-05-15T23:19:30.470+0800","caller":"middlewares/errHandler.go:53","msg":"Error reported","path":"/api/admin/login","method":"POST","error":"Key: 'LoginData.Password' Error:Field validation for 'Password' failed on the 'required' tag"}
-{"level":"warn","ts":"2024-05-15T23:53:07.911+0800","caller":"middlewares/errHandler.go:53","msg":"Error reported","path":"/api/admin/login","method":"POST","error":"Key: 'LoginData.Password' Error:Field validation for 'Password' failed on the 'required' tag"}
-{"level":"info","ts":"2024-05-16T00:51:30.216+0800","caller":"mongodb/mongoDB.go:50","msg":"Connected to MongoDB"}
-{"level":"info","ts":"2024-05-16T01:38:24.440+0800","caller":"mongodb/mongoDB.go:50","msg":"Connected to MongoDB"}
+app.log.20240521

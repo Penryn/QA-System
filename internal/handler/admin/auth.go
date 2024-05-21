@@ -1,11 +1,11 @@
 package admin
 
 import (
-	"QA-System/internal/pkg/code"
-	"QA-System/internal/models"
-	"QA-System/internal/service"
-	"QA-System/internal/pkg/utils"
 	"QA-System/internal/global/config"
+	"QA-System/internal/models"
+	"QA-System/internal/pkg/code"
+	"QA-System/internal/pkg/utils"
+	"QA-System/internal/service"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -22,14 +22,14 @@ func Login(c *gin.Context) {
 	var data LoginData
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypeBind})
+		c.Error(&gin.Error{Err: errors.New("登录失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	//判断密码是否正确
 	user, err := service.GetAdminByUsername(data.Username)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("用户信息获取失败的原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		if err == gorm.ErrRecordNotFound {
 			utils.JsonErrorResponse(c, code.UserNotFind)
 			return
@@ -39,14 +39,14 @@ func Login(c *gin.Context) {
 		}
 	}
 	if user.Password != data.Password {
-		c.Error(errors.New("密码错误"))
+		c.Error(&gin.Error{Err: errors.New("密码错误"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NoThatPasswordOrWrong)
 		return
 	}
 	//设置session
 	err = service.SetUserSession(c, user)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("设置session失败的原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -65,21 +65,21 @@ func Register(c *gin.Context) {
 	var data RegisterData
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypeBind})
+		c.Error(&gin.Error{Err: errors.New("注册失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	//判断是否有权限
 	adminKey := global.Config.GetInt("key")
 	if adminKey != data.Key {
-		c.Error(errors.New("没有权限"))
+		c.Error(&gin.Error{Err: errors.New("没有权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NotSuperAdmin)
 		return
 	}
 	//判断用户是否存在
 	err = service.IsAdminExist(data.Username)
 	if err == nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("用户已存在"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.UserExist)
 		return
 	}
@@ -90,7 +90,7 @@ func Register(c *gin.Context) {
 		AdminType: 1,
 	})
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("创建用户失败的原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}

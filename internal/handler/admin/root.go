@@ -18,49 +18,49 @@ func CreatrPermission(c *gin.Context) {
 	var data CreatePermissionData
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypeBind})
+		c.Error(&gin.Error{Err: errors.New("获取参数失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	//鉴权
 	admin, err := service.GetUserSession(c)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取用户缓存信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NotLogin)
 		return
 	}
 	if admin.AdminType != 2 {
-		c.Error(errors.New("没有权限"))
+		c.Error(&gin.Error{Err: errors.New("没有权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NoPermission)
 		return
 	}
 	user, err := service.GetUserByName(data.UserName)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取用户信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	survey, err := service.GetSurveyByID(data.SurveyID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问卷信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	if survey.UserID == user.ID {
-		c.Error(errors.New("不能给问卷所有者添加权限"))
+		c.Error(&gin.Error{Err: errors.New("不能给问卷所有者添加权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PermissionBelong)
 		return
 	}
 	err = service.CheckPermission(user.ID, data.SurveyID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("权限已存在"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PermissionExist)
 		return
 	}
 	//创建权限
 	err = service.CreatePermission(user.ID, data.SurveyID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("创建权限失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
@@ -76,43 +76,43 @@ func DeletePermission(c *gin.Context) {
 	var data DeletePermissionData
 	err := c.ShouldBindQuery(&data)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取参数失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ParamError)
 		return
 	}
 	//鉴权
 	admin, err := service.GetUserSession(c)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取用户缓存信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NotLogin)
 		return
 	}
 	if admin.AdminType != 2 {
-		c.Error(errors.New("没有权限"))
+		c.Error(&gin.Error{Err: errors.New("没有权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.NoPermission)
 		return
 	}
 	user, err := service.GetUserByName(data.UserName)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取用户信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	survey, err := service.GetSurveyByID(data.SurveyID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("获取问卷信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
 	if survey.UserID == user.ID {
-		c.Error(errors.New("不能删除问卷所有者的权限"))
+		c.Error(&gin.Error{Err: errors.New("不能删除问卷所有者的权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PermissionBelong)
 		return
 	}
 	//删除权限
 	err = service.DeletePermission(user.ID, data.SurveyID)
 	if err != nil {
-		c.Error(&gin.Error{Err: err, Type: gin.ErrorTypePublic})
+		c.Error(&gin.Error{Err: errors.New("删除权限失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}

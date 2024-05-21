@@ -16,7 +16,6 @@ func ErrHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if r := recover(); r != nil {
-				// Handle panic and log the error
 				stack := debug.Stack()
 				log.Logger.Error("Panic recovered",
 					zap.String("path", c.Request.URL.Path),

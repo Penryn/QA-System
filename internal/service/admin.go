@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-
 func GetAdminByUsername(username string) (*models.User, error) {
 	user, err := dao.GetUserByUsername(username)
 	if err != nil {
@@ -26,7 +25,7 @@ func GetAdminByUsername(username string) (*models.User, error) {
 }
 
 func GetAdminByID(id int) (*models.User, error) {
-	user ,err:= dao.GetUserByID(id)
+	user, err := dao.GetUserByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +36,7 @@ func GetAdminByID(id int) (*models.User, error) {
 }
 
 func IsAdminExist(username string) error {
-	_ ,err:= dao.GetUserByUsername(username)
+	_, err := dao.GetUserByUsername(username)
 	return err
 }
 
@@ -48,7 +47,7 @@ func CreateAdmin(user models.User) error {
 }
 
 func GetUserByName(username string) (*models.User, error) {
-	user,err:=dao.GetUserByUsername(username)
+	user, err := dao.GetUserByUsername(username)
 	return user, err
 }
 
@@ -94,7 +93,7 @@ func UpdateSurvey(id int, title string, desc string, img string, questions []dao
 	var old_imgs []string
 	new_imgs := make([]string, 0)
 	//获取原有图片
-	oldQuestions,err:=dao.GetQuestionsBySurveyID(id)
+	oldQuestions, err := dao.GetQuestionsBySurveyID(id)
 	if err != nil {
 		return err
 	}
@@ -136,13 +135,13 @@ func UpdateSurvey(id int, title string, desc string, img string, questions []dao
 }
 
 func UserInManage(uid int, sid int) bool {
-	_,err := dao.GetManageByUIDAndSID(uid, sid)
+	_, err := dao.GetManageByUIDAndSID(uid, sid)
 	return err == nil
 }
 
 func DeleteSurvey(id int) error {
 	var questions []models.Question
-	questions,err := dao.GetQuestionsBySurveyID(id)
+	questions, err := dao.GetQuestionsBySurveyID(id)
 	if err != nil {
 		return err
 	}
@@ -184,15 +183,13 @@ func DeleteSurvey(id int) error {
 	return err
 }
 
-
-
 func GetSurveyAnswers(id int, num int, size int) (dao.AnswersResonse, *int64, error) {
 	var answerSheets []dao.AnswerSheet
 	data := make([]dao.QuestionAnswers, 0)
 	time := make([]string, 0)
 	var total *int64
 	//获取问题
-	questions,err := dao.GetQuestionsBySurveyID(id)
+	questions, err := dao.GetQuestionsBySurveyID(id)
 	if err != nil {
 		return dao.AnswersResonse{}, nil, err
 	}
@@ -212,7 +209,7 @@ func GetSurveyAnswers(id int, num int, size int) (dao.AnswersResonse, *int64, er
 	for _, answerSheet := range answerSheets {
 		time = append(time, answerSheet.Time)
 		for _, answer := range answerSheet.Answers {
-			question,err:=dao.GetQuestionByID(answer.QuestionID)
+			question, err := dao.GetQuestionByID(answer.QuestionID)
 			if err != nil {
 				return dao.AnswersResonse{}, nil, err
 			}
@@ -269,7 +266,7 @@ func ProcessResponse(response []interface{}, pageNum, pageSize int, title string
 	return pagedResponse, &num
 }
 
-func GetAllSurvey(pageNum, pageSize int, title string) ([]interface{}, *int64,error) {
+func GetAllSurvey(pageNum, pageSize int, title string) ([]interface{}, *int64, error) {
 	surveys, num, error := dao.GetSurveyByTitle(title, pageNum, pageSize)
 	if error != nil {
 		return nil, nil, error
@@ -303,7 +300,7 @@ func GetAllSurveyAnswers(id int) (dao.AnswersResonse, error) {
 	var answerSheets []dao.AnswerSheet
 	var questions []models.Question
 	var time []string
-	questions,err:=dao.GetQuestionsBySurveyID(id)
+	questions, err := dao.GetQuestionsBySurveyID(id)
 	if err != nil {
 		return dao.AnswersResonse{}, err
 	}
@@ -319,7 +316,7 @@ func GetAllSurveyAnswers(id int) (dao.AnswersResonse, error) {
 	for _, answerSheet := range answerSheets {
 		time = append(time, answerSheet.Time)
 		for _, answer := range answerSheet.Answers {
-			question,err:=dao.GetQuestionByID(answer.QuestionID)
+			question, err := dao.GetQuestionByID(answer.QuestionID)
 			if err != nil {
 				return dao.AnswersResonse{}, err
 			}
@@ -344,7 +341,7 @@ func contains(arr []string, str string) bool {
 
 func getOldImgs(id int, questions []models.Question) ([]string, error) {
 	var imgs []string
-	survey,err:=dao.GetSurveyByID(id)
+	survey, err := dao.GetSurveyByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +349,7 @@ func getOldImgs(id int, questions []models.Question) ([]string, error) {
 	for _, question := range questions {
 		imgs = append(imgs, question.Img)
 		var options []models.Option
-		options,err=dao.GetOptionsByQuestionID(question.ID)
+		options, err = dao.GetOptionsByQuestionID(question.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -365,7 +362,7 @@ func getOldImgs(id int, questions []models.Question) ([]string, error) {
 
 func getDelImgs(id int, questions []models.Question, answerSheets []dao.AnswerSheet) ([]string, error) {
 	var imgs []string
-	survey,err:=dao.GetSurveyByID(id)
+	survey, err := dao.GetSurveyByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -373,7 +370,7 @@ func getDelImgs(id int, questions []models.Question, answerSheets []dao.AnswerSh
 	for _, question := range questions {
 		imgs = append(imgs, question.Img)
 		var options []models.Option
-		options,err=dao.GetOptionsByQuestionID(question.ID)
+		options, err = dao.GetOptionsByQuestionID(question.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -383,7 +380,7 @@ func getDelImgs(id int, questions []models.Question, answerSheets []dao.AnswerSh
 	}
 	for _, answerSheet := range answerSheets {
 		for _, answer := range answerSheet.Answers {
-			question,err:=dao.GetQuestionByID(answer.QuestionID)
+			question, err := dao.GetQuestionByID(answer.QuestionID)
 			if err != nil {
 				return nil, err
 			}
@@ -429,50 +426,70 @@ func createQuestionsAndOptions(questions []dao.Question, sid int) ([]string, err
 	return imgs, nil
 }
 
-func GetLastLinesFromLogFile(filePath string, numLines int, logType int) ([]map[string]interface{}, error) {
-	// 打开日志文件
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
+func GetLastLinesFromLogFile(numLines int, logType int) ([]map[string]interface{}, error) {
 	levelMap := map[int]string{
 		0: "",
-		1: "error",
-		2: "warn",
-		3: "info",
-		4: "debug",
+		1: "ERROR",
+		2: "WARN",
+		3: "INFO",
+		4: "DEBUG",
 	}
 	level := levelMap[logType]
+
+	var files []*os.File
+	var file *os.File
+	var err error
+
+	if logType == 0 {
+		// 打开所有相关的日志文件
+		files, err = openAllLogFiles()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// 根据 logType 打开特定的日志文件
+		file, err = openLogFile(logType)
+		if err != nil {
+			return nil, err
+		}
+		if file != nil {
+			files = append(files, file)
+		}
+	}
+	defer closeFiles(files)
+
+	if len(files) == 0 {
+		return nil, nil
+	}
 
 	// 用于存储解析后的日志内容
 	var logs []map[string]interface{}
 
-	// 逐行读取文件内容
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		// 解析JSON字符串为map类型
-		var logData map[string]interface{}
-		if err := json.Unmarshal(scanner.Bytes(), &logData); err != nil {
-			// 如果解析失败，跳过这行日志继续处理下一行
-			continue
-		}
+	// 从每个文件中读取内容
+	for _, file := range files {
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			// 解析 JSON 字符串为 map 类型
+			var logData map[string]interface{}
+			if err := json.Unmarshal(scanner.Bytes(), &logData); err != nil {
+				// 如果解析失败，跳过这行日志继续处理下一行
+				continue
+			}
 
-		// 根据logType筛选日志
-		if level != "" {
-			if logData["level"] == level {
+			// 根据 logType 筛选日志
+			if level != "" {
+				if logData["L"] == level {
+					logs = append(logs, logData)
+				}
+			} else {
 				logs = append(logs, logData)
 			}
-		} else {
-			logs = append(logs, logData)
 		}
 
-	}
-
-	// 检查是否发生了读取错误
-	if err := scanner.Err(); err != nil {
-		return nil, err
+		// 检查是否发生了读取错误
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
 	}
 
 	// 如果文件中的行数不足以满足需求，直接返回所有行
@@ -483,6 +500,57 @@ func GetLastLinesFromLogFile(filePath string, numLines int, logType int) ([]map[
 	// 如果文件中的行数超过需求，提取最后几行并返回
 	startIndex := len(logs) - numLines
 	return logs[startIndex:], nil
+}
+
+// 根据 logType 打开单个日志文件
+func openLogFile(logType int) (*os.File, error) {
+	var filePath string
+	switch logType {
+	case 1:
+		filePath = "./logs/app_error.log"
+	case 2:
+		filePath = "./logs/app_warn.log"
+	case 3, 4:
+		filePath = "./logs/app.log"
+	}
+	file, err := os.Open(filePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil // 文件不存在，返回 nil
+		}
+		return nil, err
+	}
+	return file, nil
+}
+
+// 打开所有相关的日志文件
+func openAllLogFiles() ([]*os.File, error) {
+	filePaths := []string{
+		"./logs/app.log",
+		"./logs/app_error.log",
+		"./logs/app_warn.log",
+	}
+
+	var openFiles []*os.File
+	for _, filePath := range filePaths {
+		f, err := os.Open(filePath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			closeFiles(openFiles)
+			return nil, err
+		}
+		openFiles = append(openFiles, f)
+	}
+	return openFiles, nil
+}
+
+// 关闭所有文件
+func closeFiles(files []*os.File) {
+	for _, file := range files {
+		file.Close()
+	}
 }
 
 func DeleteAnswerSheetBySurveyID(surveyID int) error {

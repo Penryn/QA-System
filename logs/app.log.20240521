@@ -1,0 +1,44 @@
+{"L":"INFO","T":"2024-05-21T22:41:04.949+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:41:04.987+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:41:05.407+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:42:21.992+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: open ./logs/app_error.log: The system cannot find the file specified."}
+{"L":"INFO","T":"2024-05-21T22:44:36.504+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: open ./logs/app_error.log: The system cannot find the file specified."}
+{"L":"INFO","T":"2024-05-21T22:44:41.531+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:44:41.564+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:44:41.994+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:45:08.263+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: invalid argument"}
+{"L":"INFO","T":"2024-05-21T22:45:28.984+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:45:29.020+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:45:29.502+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:45:49.579+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: open ./logs/app_error.log: The system cannot find the file specified."}
+{"L":"INFO","T":"2024-05-21T22:50:21.522+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:50:21.556+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:50:22.188+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:52:47.031+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:52:47.066+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:52:47.472+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:56:05.083+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:56:05.117+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:56:05.601+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:57:37.378+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:57:37.412+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:57:37.864+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:58:48.366+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:58:48.403+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T22:58:48.912+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:00:31.416+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:00:31.454+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:00:31.957+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:01:07.798+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: invalid argument"}
+{"L":"INFO","T":"2024-05-21T23:01:15.254+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: invalid argument"}
+{"L":"INFO","T":"2024-05-21T23:03:14.127+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:03:14.160+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:03:14.599+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:03:41.873+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: invalid argument"}
+{"L":"INFO","T":"2024-05-21T23:05:36.799+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:05:36.832+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:05:37.272+0800","M":"Connected to MongoDB","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:06:01.135+0800","M":"Error reported","serviceName":"app","path":"/api/admin/log","method":"GET","error":"获取日志失败原因: invalid argument"}
+{"L":"INFO","T":"2024-05-21T23:07:07.208+0800","M":"Logger initialized","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:07:07.241+0800","M":"Connected to MySQL","serviceName":"app"}
+{"L":"INFO","T":"2024-05-21T23:07:07.658+0800","M":"Connected to MongoDB","serviceName":"app"}

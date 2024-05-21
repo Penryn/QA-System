@@ -39,6 +39,8 @@ log:
   disableStacktrace: true
   encoding: "json"
   level: "info"
-  name: "qa-service"
+  name: "app"
   writers: "console,file"
-  loggerDir: "/logs"
+  loggerDir: "./logs"
+  LogRollingPolicy: daily
+  LogBackupCount: 7
