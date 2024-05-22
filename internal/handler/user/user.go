@@ -2,7 +2,9 @@ package user
 
 import (
 	"QA-System/internal/dao"
+	"QA-System/internal/handler/queue"
 	"QA-System/internal/pkg/code"
+	"QA-System/internal/pkg/queue/asynq"
 	"QA-System/internal/pkg/utils"
 	"QA-System/internal/service"
 	"errors"
@@ -100,13 +102,20 @@ func SubmitSurvey(c *gin.Context) {
 
 		}
 	}
-	// 提交问卷
-	err = service.SubmitSurvey(data.ID, data.QuestionsList)
-	if err != nil {
-		c.Error(&gin.Error{Err: errors.New("提交问卷失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-		utils.JsonErrorResponse(c, code.ServerError)
-		return
-	}
+	// 创建并入队任务
+    task, err := queue.NewSubmitSurveyTask(data.ID, data.QuestionsList)
+    if err != nil {
+        c.Error(&gin.Error{Err: errors.New("创建任务失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
+        utils.JsonErrorResponse(c, code.ServerError)
+        return
+    }
+	
+	_, err = asynq.Client.Enqueue(task)
+    if err != nil {
+        c.Error(&gin.Error{Err: errors.New("任务入队失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
+        utils.JsonErrorResponse(c, code.ServerError)
+        return
+    }
 	utils.JsonSuccessResponse(c, nil)
 }
 

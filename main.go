@@ -1,11 +1,12 @@
 package main
 
 import (
+	"QA-System/internal/middleware"
 	mongodb "QA-System/internal/pkg/database/mongodb"
 	mysql "QA-System/internal/pkg/database/mysql"
 	"QA-System/internal/pkg/log"
+	"QA-System/internal/pkg/queue/asynq"
 	"QA-System/internal/pkg/session"
-	"QA-System/internal/middleware"
 	"QA-System/internal/router"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,7 @@ func main() {
 	r.Static("/xlsx", "./public/xlsx")
 	session.Init(r)
 	router.Init(r)
+	go asynq.AsynqInit()
 	err := r.Run()
 	if err != nil {
 		log.Logger.Fatal("Failed to start the server:" + err.Error())
