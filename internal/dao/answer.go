@@ -2,24 +2,22 @@ package dao
 
 import (
 	"context"
-	mongodb "QA-System/internal/pkg/database/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type AnswerSheet struct {
-	SurveyID int      `json:"survey_id"` //问卷ID
-	Time     string   `json:"time"`      //回答时间
-	Answers  []Answer `json:"answers"`   //回答
+	SurveyID int      `json:"survey_id"` // 问卷ID
+	Time     string   `json:"time"`      // 回答时间
+	Answers  []Answer `json:"answers"`   // 回答
 }
 
 type Answer struct {
-	QuestionID int    `json:"question_id"` //问题ID
-	SerialNum  int    `json:"serial_num"`  //问题序号
-	Subject    string `json:"subject"`     //问题
-	Content    string `json:"content"`     //回答内容
+	QuestionID int    `json:"question_id"` // 问题ID
+	SerialNum  int    `json:"serial_num"`  // 问题序号
+	Subject    string `json:"subject"`     // 问题
+	Content    string `json:"content"`     // 回答内容
 }
-
 
 type QuestionAnswers struct {
 	Title   string   `json:"title"`
@@ -31,23 +29,23 @@ type AnswersResonse struct {
 	Time            []string          `json:"time"`
 }
 
-func SaveAnswerSheet(answerSheet AnswerSheet) error {
-	_, err := mongodb.MDB.InsertOne(context.Background(), answerSheet)
+// SaveAnswerSheet 将答卷保存到 MongoDB 集合中
+func (d *Dao) SaveAnswerSheet(ctx context.Context, answerSheet AnswerSheet) error {
+	_, err := d.mongo.InsertOne(ctx, answerSheet)
 	return err
 }
 
-func GetAnswerSheetBySurveyID(surveyID int, pageNum int, pageSize int) ([]AnswerSheet, *int64, error) {
+// GetAnswerSheetBySurveyID 根据问卷ID分页获取答卷
+func (d *Dao) GetAnswerSheetBySurveyID(ctx context.Context, surveyID int, pageNum int, pageSize int) ([]AnswerSheet, *int64, error) {
 	var answerSheets []AnswerSheet
 	filter := bson.M{"surveyid": surveyID}
 
-	// 设置总记录数查询过滤条件
+	// 设置总记录数查询过滤条件和选项
 	countFilter := bson.M{"surveyid": surveyID}
-
-	// 设置总记录数查询选项
 	countOpts := options.Count()
 
 	// 执行总记录数查询
-	total, err := mongodb.MDB.CountDocuments(context.Background(), countFilter, countOpts)
+	total, err := d.mongo.CountDocuments(ctx, countFilter, countOpts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -58,15 +56,16 @@ func GetAnswerSheetBySurveyID(surveyID int, pageNum int, pageSize int) ([]Answer
 		opts.SetSkip(int64((pageNum - 1) * pageSize)) // 计算要跳过的文档数
 		opts.SetLimit(int64(pageSize))                // 设置返回的文档数
 	}
+
 	// 执行分页查询
-	cur, err := mongodb.MDB.Find(context.Background(), filter, opts)
+	cur, err := d.mongo.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, nil, err
 	}
-	defer cur.Close(context.Background())
+	defer cur.Close(ctx)
 
 	// 迭代查询结果
-	for cur.Next(context.Background()) {
+	for cur.Next(ctx) {
 		var answerSheet AnswerSheet
 		if err := cur.Decode(&answerSheet); err != nil {
 			return nil, nil, err
@@ -81,12 +80,10 @@ func GetAnswerSheetBySurveyID(surveyID int, pageNum int, pageSize int) ([]Answer
 	return answerSheets, &total, nil
 }
 
-func DeleteAnswerSheetBySurveyID(surveyID int) error {
+// DeleteAnswerSheetBySurveyID 根据问卷ID删除答卷
+func (d *Dao) DeleteAnswerSheetBySurveyID(ctx context.Context, surveyID int) error {
 	filter := bson.M{"surveyid": surveyID}
 	// 删除所有满足条件的文档
-	_, err := mongodb.MDB.DeleteMany(context.Background(), filter)
-	if err != nil {
-		return err
-	}
-	return nil
+	_, err := d.mongo.DeleteMany(ctx, filter)
+	return err
 }

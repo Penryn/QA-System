@@ -2,40 +2,43 @@ package dao
 
 import (
 	"QA-System/internal/models"
-
-	mysql "QA-System/internal/pkg/database/mysql"
+	"context"
 )
 
 
-func CreateManage(id int, surveyID int) error {
-	err := mysql.DB.Create(&models.Manage{UserID: id, SurveyID: surveyID}).Error
+func (d *Dao) CreateManage(ctx context.Context, id int, surveyID int) error {
+	err := d.orm.WithContext(ctx).Create(&models.Manage{UserID: id, SurveyID: surveyID}).Error
 	return err
 }
 
-func DeleteManage(id int, surveyID int) error {
-	err := mysql.DB.Where("user_id = ? AND survey_id = ?", id, surveyID).Delete(&models.Manage{}).Error
+
+func (d *Dao) DeleteManage(ctx context.Context, id int, surveyID int) error {
+	err := d.orm.WithContext(ctx).Where("user_id = ? AND survey_id = ?", id, surveyID).Delete(&models.Manage{}).Error
 	return err
 }
 
-func DeleteManageBySurveyID(surveyID int) error {
-	err := mysql.DB.Where("survey_id = ?", surveyID).Delete(&models.Manage{}).Error
+
+func (d *Dao) DeleteManageBySurveyID(ctx context.Context, surveyID int) error {
+	err := d.orm.WithContext(ctx).Where("survey_id = ?", surveyID).Delete(&models.Manage{}).Error
 	return err
 }
 
-func CheckManage(id int, surveyID int) error {
+func (d *Dao) CheckManage(ctx context.Context, id int, surveyID int) error {
 	var manage models.Manage
-	err := mysql.DB.Where("user_id = ? AND survey_id = ?", id, surveyID).First(&manage).Error
+	err := d.orm.WithContext(ctx).Where("user_id = ? AND survey_id = ?", id, surveyID).First(&manage).Error
 	return err
 }
 
-func GetManageByUIDAndSID(uid int, sid int) (*models.Manage, error) {
+
+func (d *Dao) GetManageByUIDAndSID(ctx context.Context, uid int, sid int) (*models.Manage, error) {
 	var manage models.Manage
-	err := mysql.DB.Where("user_id = ? AND survey_id = ?", uid, sid).First(&manage).Error
+	err := d.orm.WithContext(ctx).Where("user_id = ? AND survey_id = ?", uid, sid).First(&manage).Error
 	return &manage, err
 }
 
-func GetManageByUserID(uid int) ([]models.Manage, error) {
+
+func (d *Dao) GetManageByUserID(ctx context.Context, uid int) ([]models.Manage, error) {
 	var manages []models.Manage
-	err := mysql.DB.Where("user_id = ?", uid).Find(&manages).Error
+	err := d.orm.WithContext(ctx).Where("user_id = ?", uid).Find(&manages).Error
 	return manages, err
 }

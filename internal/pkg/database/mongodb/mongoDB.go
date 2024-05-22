@@ -13,9 +13,9 @@ import (
 	"QA-System/internal/pkg/log"
 )
 
-var MDB *mongo.Collection
 
-func MongodbInit() {
+
+func MongodbInit() *mongo.Collection {
 	// Get MongoDB connection information from the configuration file
 	user := global.Config.GetString("mongodb.user")
 	pass := global.Config.GetString("mongodb.pass")
@@ -44,8 +44,9 @@ func MongodbInit() {
 	}
 
 	// Set the MongoDB database
-	MDB = client.Database(name).Collection(collection)
+	mdb := client.Database(name).Collection(collection)
 
 	// Print a log message to indicate successful connection to MongoDB
 	log.Logger.Info("Connected to MongoDB")
+	return mdb
 }

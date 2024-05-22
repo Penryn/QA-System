@@ -2,8 +2,7 @@ package dao
 
 import (
 	"QA-System/internal/models"
-
-	mysql "QA-System/internal/pkg/database/mysql"
+	"context"
 )
 
 type Option struct {
@@ -12,18 +11,18 @@ type Option struct {
 	Img       string `json:"img"`        //图片
 }
 
-func CreateOption(option models.Option) error {
-	err := mysql.DB.Create(&option).Error
+func (d *Dao) CreateOption(ctx context.Context, option models.Option) error {
+	err := d.orm.WithContext(ctx).Create(&option).Error
 	return err
 }
 
-func GetOptionsByQuestionID(questionID int) ([]models.Option, error) {
+func (d *Dao) GetOptionsByQuestionID(ctx context.Context, questionID int) ([]models.Option, error) {
 	var options []models.Option
-	err := mysql.DB.Model(models.Option{}).Where("question_id = ?", questionID).Find(&options).Error
+	err := d.orm.WithContext(ctx).Model(models.Option{}).Where("question_id = ?", questionID).Find(&options).Error
 	return options, err
 }
 
-func DeleteOption(optionID int) error {
-	err := mysql.DB.Where("id = ?", optionID).Delete(&models.Option{}).Error
+func (d *Dao) DeleteOption(ctx context.Context, optionID int) error {
+	err := d.orm.WithContext(ctx).Where("id = ?", optionID).Delete(&models.Option{}).Error
 	return err
 }

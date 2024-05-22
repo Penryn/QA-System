@@ -7,14 +7,23 @@ import (
 	"time"
 
 	r "QA-System/internal/pkg/redis"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 var (
 	ctx = context.Background()
+	d  *dao.Dao
 )
 
+
+func ServiceInit(db *gorm.DB,mdb  *mongo.Collection){
+	d=dao.New(db,mdb)
+}
+
 func GetAnswerSheetBySurveyID(surveyID int, pageNum int, pageSize int) ([]dao.AnswerSheet, *int64, error) {
-	answerSheets, total, err := dao.GetAnswerSheetBySurveyID(surveyID, pageNum, pageSize)
+	answerSheets, total, err := d.GetAnswerSheetBySurveyID(ctx,surveyID, pageNum, pageSize)
 	return answerSheets, total, err
 }
 

@@ -11,23 +11,23 @@ import (
 )
 
 func GetSurveyByID(id int) (*models.Survey, error) {
-	survey, err := dao.GetSurveyByID(id)
+	survey, err := d.GetSurveyByID(ctx,id)
 	return survey, err
 }
 
 func GetQuestionsBySurveyID(id int) ([]models.Question, error) {
 	var questions []models.Question
-	questions, err := dao.GetQuestionsBySurveyID(id)
+	questions, err := d.GetQuestionsBySurveyID(ctx,id)
 	return questions, err
 }
 
 func GetOptionsByQuestionID(questionId int) ([]models.Option, error) {
-	options,err:=dao.GetOptionsByQuestionID(questionId)
+	options,err:=d.GetOptionsByQuestionID(ctx,questionId)
 	return options, err
 }
 
 func GetQuestionByID(id int) (*models.Question, error) {
-	question, err := dao.GetQuestionByID(id)
+	question, err := d.GetQuestionByID(ctx,id)
 	return question, err
 }
 
@@ -63,7 +63,7 @@ func SubmitSurvey(sid int, data []dao.QuestionsList) error {
 	if err != nil {
 		return err
 	}
-	err = dao.IncreaseSurveyNum(sid)
+	err = d.IncreaseSurveyNum(ctx,sid)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func SubmitSurvey(sid int, data []dao.QuestionsList) error {
 }
 
 func SaveAnswerSheet(answerSheet dao.AnswerSheet) error {
-	err := dao.SaveAnswerSheet(answerSheet)
+	err := d.SaveAnswerSheet(ctx,answerSheet)
 	if err != nil {
 		log.Logger.Error(err.Error())
 	}

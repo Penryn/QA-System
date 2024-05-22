@@ -2,23 +2,25 @@ package dao
 
 import (
 	"QA-System/internal/models"
-
-	mysql "QA-System/internal/pkg/database/mysql"
+	"context"
 )
 
-func GetUserByUsername(username string) (*models.User, error) {
+// GetUserByUsername 根据用户名获取用户
+func (d *Dao) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
 	var user models.User
-	result := mysql.DB.Model(&models.User{}).Where("username = ?", username).First(&user)
+	result := d.orm.WithContext(ctx).Model(&models.User{}).Where("username = ?", username).First(&user)
 	return &user, result.Error
 }
 
-func GetUserByID(id int) (*models.User, error) {
+// GetUserByID 根据用户ID获取用户
+func (d *Dao) GetUserByID(ctx context.Context, id int) (*models.User, error) {
 	var user models.User
-	result := mysql.DB.Model(&models.User{}).Where("id = ?", id).First(&user)
+	result := d.orm.WithContext(ctx).Model(&models.User{}).Where("id = ?", id).First(&user)
 	return &user, result.Error
 }
 
-func CreateUser(user models.User) error {
-	result := mysql.DB.Model(models.User{}).Create(&user)
+// CreateUser 创建新用户
+func (d *Dao) CreateUser(ctx context.Context, user *models.User) error {
+	result := d.orm.WithContext(ctx).Model(&models.User{}).Create(user)
 	return result.Error
 }

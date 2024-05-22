@@ -10,9 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
 
-func MysqlInit() { // 初始化数据库
+
+func MysqlInit() *gorm.DB {
 
 	user := global.Config.GetString("mysql.user")
 	pass := global.Config.GetString("mysql.pass")
@@ -34,5 +34,5 @@ func MysqlInit() { // 初始化数据库
 		log.Logger.Fatal("DatabaseMigrateFailed"+ err.Error())
 	}
 	log.Logger.Info("Connected to MySQL")
-	DB = db
+	return db
 }
