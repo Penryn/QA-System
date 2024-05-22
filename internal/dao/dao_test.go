@@ -2,14 +2,19 @@ package dao
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
 	"QA-System/internal/models"
+	mongodb "QA-System/internal/pkg/database/mongodb"
+	mysql "QA-System/internal/pkg/database/mysql"
+	"QA-System/internal/pkg/log"
 
 	"github.com/smartystreets/goconvey/convey"
 )
 
+//// mock单元测试
 func TestDao(t *testing.T) {
 	convey.Convey("Given a MockDao", t, func() {
 		mockDao := new(MockDao)
@@ -352,4 +357,86 @@ func TestDao(t *testing.T) {
 		})
 
 	})
+}
+
+//// 性能测试
+// mysql 增加
+func BenchmarkCreateSurvey(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	title :=fmt.Sprintf("title%d",time.Now().Unix())
+	survey := models.Survey{Title: title, Desc: "desc", Img: "img", Deadline: time.Now()}
+	for i := 0; i < b.N; i++ {
+		d.CreateSurvey(context.Background(), survey)
+	}
+}
+
+// mysql 查询
+func BenchmarkGetSurveyByTitle(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	title :=fmt.Sprintf("title%d",time.Now().Unix())
+	for i := 0; i < b.N; i++ {
+		d.GetSurveyByTitle(context.Background(), title, 1, 1)
+	}
+}
+
+// mysql 删除
+func BenchmarkDeleteSurvey(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	for i := 15; i < b.N; i++ {
+		d.DeleteSurvey(context.Background(), i)
+	}
+}
+
+// mysql 更新
+func BenchmarkUpdateSurvey(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d.UpdateSurvey(context.Background(), 1, "title", "desc", "img", time.Now())
+	}
+}
+
+// mongodb 增加
+func BenchmarkSaveAnswerSheet(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	answerSheet := AnswerSheet{SurveyID: 1, Time: "2021-01-01 00:00:00"}
+	for i := 0; i < b.N; i++ {
+		d.SaveAnswerSheet(context.Background(), answerSheet)
+	}
+}
+
+// mongodb 查询
+func BenchmarkGetAnswerSheetBySurveyID(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d.GetAnswerSheetBySurveyID(context.Background(), 1, 1, 1)
+	}
+}
+
+// mongodb 删除
+func BenchmarkDeleteAnswerSheetBySurveyID(b *testing.B) {
+	log.ZapInit()
+	d := New(mysql.MysqlInit(), mongodb.MongodbInit())
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d.DeleteAnswerSheetBySurveyID(context.Background(), 1)
+	}
 }
