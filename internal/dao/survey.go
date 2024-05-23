@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func (d *Dao) CreateSurvey(ctx context.Context, survey models.Survey) error {
+func (d *Dao) CreateSurvey(ctx context.Context, survey models.Survey)(models.Survey, error) {
 	err := d.orm.WithContext(ctx).Create(&survey).Error
-	return err
+	return survey,err
 }
 
 func (d *Dao) UpdateSurveyStatus(ctx context.Context, surveyID int, status int) error {

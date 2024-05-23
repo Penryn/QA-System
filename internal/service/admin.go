@@ -74,7 +74,7 @@ func CreateSurvey(id int, title string, desc string, img string, questions []dao
 	survey.Img = img
 	survey.Status = status
 	survey.Deadline = time
-	err := d.CreateSurvey(ctx,survey)
+	survey,err := d.CreateSurvey(ctx,survey)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func UpdateSurvey(id int, title string, desc string, img string, questions []dao
 	//删除无用图片
 	for _, old_img := range old_imgs {
 		if !contains(new_imgs, old_img) {
-			_ = os.Remove("./static/" + strings.TrimPrefix(old_img, urlHost+"/static/"))
+			_ = os.Remove("./public/static/" + strings.TrimPrefix(old_img, urlHost+"/public/static/"))
 		}
 	}
 	return nil
@@ -157,7 +157,7 @@ func DeleteSurvey(id int) error {
 	}
 	urlHost := GetConfigUrl()
 	for _, img := range imgs {
-		_ = os.Remove("./static/" + strings.TrimPrefix(img, urlHost+"/static/"))
+		_ = os.Remove("./public/static/" + strings.TrimPrefix(img, urlHost+"/public/static/"))
 	}
 	//删除答卷
 	err = DeleteAnswerSheetBySurveyID(id)
