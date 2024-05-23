@@ -214,6 +214,24 @@ func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 		timeFormat = ".%Y%m%d"
 	}
 
+	// 检查日志文件是否存在
+	if _, err := os.Stat(logFullPath); os.IsNotExist(err) {
+		// 如果日志文件不存在，创建它
+		file, err := os.Create(logFullPath)
+		if err != nil {
+			zap.S().Error("Failed to create log file:", err)
+			panic(err)
+		}
+		file.Close()
+
+		// 设置日志文件权限为 0644
+		err = os.Chmod(logFullPath, 0644)
+		if err != nil {
+			zap.S().Error("Failed to set log file permissions:", err)
+			panic(err)
+		}
+	}
+
 	hook, err := rotatelogs.New(
 		logFullPath+time.Now().Format(timeFormat),
 		rotatelogs.WithLinkName(logFullPath),
