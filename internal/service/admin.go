@@ -406,7 +406,7 @@ func createQuestionsAndOptions(questions []dao.Question, sid int) ([]string, err
 		q.OtherOption = question.OtherOption
 		q.QuestionType = question.QuestionType
 		imgs = append(imgs, question.Img)
-		err := d.CreateQuestion(ctx,q)
+		q,err := d.CreateQuestion(ctx,q)
 		if err != nil {
 			return nil, err
 		}

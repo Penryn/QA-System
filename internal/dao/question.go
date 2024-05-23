@@ -25,9 +25,9 @@ type QuestionsList struct {
 	Answer     string `json:"answer"`
 }
 
-func (d *Dao) CreateQuestion(ctx context.Context, question models.Question) error {
+func (d *Dao) CreateQuestion(ctx context.Context, question models.Question)(models.Question, error) {
 	err := d.orm.WithContext(ctx).Create(&question).Error
-	return err
+	return question,err
 }
 
 func (d *Dao) GetQuestionsBySurveyID(ctx context.Context, surveyID int) ([]models.Question, error) {
