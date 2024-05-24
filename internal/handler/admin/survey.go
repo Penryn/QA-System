@@ -6,13 +6,9 @@ import (
 	"QA-System/internal/pkg/utils"
 	"QA-System/internal/service"
 	"errors"
-	"fmt"
 	"math"
-	"os"
-	"strconv"
 	"time"
 
-	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -20,11 +16,11 @@ import (
 
 // 新建问卷
 type CreateSurveyData struct {
-	Title     string                  `json:"title"`
-	Desc      string                  `json:"desc" `
-	Img       string                  `json:"img" `
-	Status    int                     `json:"status" `
-	Time      string                  `json:"time"`
+	Title     string         `json:"title"`
+	Desc      string         `json:"desc" `
+	Img       string         `json:"img" `
+	Status    int            `json:"status" `
+	Time      string         `json:"time"`
 	Questions []dao.Question `json:"questions"`
 }
 
@@ -111,11 +107,11 @@ func UpdateSurveyStatus(c *gin.Context) {
 }
 
 type UpdateSurveyData struct {
-	ID        int                     `json:"id" binding:"required"`
-	Title     string                  `json:"title"`
-	Desc      string                  `json:"desc" `
-	Img       string                  `json:"img" `
-	Time      string                  `json:"time"`
+	ID        int            `json:"id" binding:"required"`
+	Title     string         `json:"title"`
+	Desc      string         `json:"desc" `
+	Img       string         `json:"img" `
+	Time      string         `json:"time"`
 	Questions []dao.Question `json:"questions"`
 }
 
@@ -167,7 +163,7 @@ func UpdateSurvey(c *gin.Context) {
 		return
 	}
 	//修改问卷
-	err = service.UpdateSurvey(data.ID, data.Title, data.Desc, data.Img, data.Questions,ddlTime)
+	err = service.UpdateSurvey(data.ID, data.Title, data.Desc, data.Img, data.Questions, ddlTime)
 	if err != nil {
 		c.Error(&gin.Error{Err: errors.New("修改问卷失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
@@ -300,7 +296,7 @@ func GetAllSurvey(c *gin.Context) {
 	response := make([]interface{}, 0)
 	var totalPageNum *int64
 	if user.AdminType == 2 {
-		response, totalPageNum,err = service.GetAllSurvey(data.PageNum, data.PageSize, data.Title)
+		response, totalPageNum, err = service.GetAllSurvey(data.PageNum, data.PageSize, data.Title)
 		if err != nil {
 			c.Error(&gin.Error{Err: errors.New("获取问卷信息失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
 			utils.JsonErrorResponse(c, code.ServerError)
@@ -348,10 +344,10 @@ type GetSurveyData struct {
 }
 
 type SurveyData struct {
-	ID        int                    `json:"id"`
-	Time      string                 `json:"time"`
-	Desc      string                 `json:"desc"`
-	Img       string                 `json:"img"`
+	ID        int            `json:"id"`
+	Time      string         `json:"time"`
+	Desc      string         `json:"desc"`
+	Img       string         `json:"img"`
 	Questions []dao.Question `json:"questions"`
 }
 
@@ -402,9 +398,9 @@ func GetSurvey(c *gin.Context) {
 		optionsResponse := make([]map[string]interface{}, 0)
 		for _, option := range options {
 			optionResponse := map[string]interface{}{
-				"img":		 option.Img,
-				"content":     option.Content,
-				"serial_num":  option.SerialNum,
+				"img":        option.Img,
+				"content":    option.Content,
+				"serial_num": option.SerialNum,
 			}
 			optionsResponse = append(optionsResponse, optionResponse)
 		}
@@ -474,109 +470,11 @@ func DownloadFile(c *gin.Context) {
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
-	questionAnswers := answers.QuestionAnswers
-	times := answers.Time
-	// 创建一个新的Excel文件
-	f := excelize.NewFile()
-	streamWriter, err := f.NewStreamWriter("Sheet1")
+	url, err := service.HandleDownloadFile(answers, survey)
 	if err != nil {
-		c.Error(&gin.Error{Err: errors.New("创建Excel文件失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
+		c.Error(&gin.Error{Err: errors.New("文件下载失败" + err.Error()), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.ServerError)
 		return
 	}
-	// 设置字体样式
-	styleID, err := f.NewStyle(&excelize.Style{
-		Font: &excelize.Font{Bold: true},
-	})
-	if err != nil {
-		c.Error(&gin.Error{Err: errors.New("设置字体样式失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-		utils.JsonErrorResponse(c, code.ServerError)
-		return
-	}
-	// 计算每列的最大宽度
-	maxWidths := make(map[int]int)
-	maxWidths[0] = 7
-	maxWidths[1] = 20
-	for i, qa := range questionAnswers {
-		maxWidths[i+2] = len(qa.Title)
-		for _, answer := range qa.Answers {
-			if len(answer) > maxWidths[i+2] {
-				maxWidths[i+2] = len(answer)
-			}
-		}
-	}
-	// 设置列宽
-	for colIndex, width := range maxWidths {
-		if err := streamWriter.SetColWidth(colIndex+1, colIndex+1, float64(width)); err != nil {
-			c.Error(&gin.Error{Err: errors.New("设置列宽失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-			utils.JsonErrorResponse(c, code.ServerError)
-			return
-		}
-	}
-	// 写入标题行
-	rowData := make([]interface{}, 0)
-	rowData = append(rowData, excelize.Cell{Value: "序号", StyleID: styleID}, excelize.Cell{Value: "提交时间", StyleID: styleID})
-	for _, qa := range questionAnswers {
-		rowData = append(rowData, excelize.Cell{Value: qa.Title, StyleID: styleID})
-	}
-	if err := streamWriter.SetRow("A1", rowData); err != nil {
-		c.Error(&gin.Error{Err: errors.New("写入标题行失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-		utils.JsonErrorResponse(c, code.ServerError)
-		return
-	}
-	// 写入数据
-	for i, time := range times {
-		row := []interface{}{i + 1, time}
-		for j, qa := range questionAnswers {
-			if len(qa.Answers) <= i {
-				continue
-			}
-			answer := qa.Answers[i]
-			row = append(row, answer)
-			colName, _ := excelize.ColumnNumberToName(j + 3)
-			if err := f.SetCellValue("Sheet1", colName+strconv.Itoa(i+2), answer); err != nil {
-				c.Error(&gin.Error{Err: errors.New("写入数据失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-				utils.JsonErrorResponse(c, code.ServerError)
-				return
-			}
-		}
-		if err := streamWriter.SetRow(fmt.Sprintf("A%d", i+2), row); err != nil {
-			c.Error(&gin.Error{Err: errors.New("写入数据失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-			utils.JsonErrorResponse(c, code.ServerError)
-			return
-		}
-	}
-	// 关闭
-	if err := streamWriter.Flush(); err != nil {
-		c.Error(&gin.Error{Err: errors.New("关闭失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-		utils.JsonErrorResponse(c, code.ServerError)
-		return
-	}
-	// 保存Excel文件
-	fileName := survey.Title + ".xlsx"
-	filePath := "./public/xlsx/" + fileName
-	if _, err := os.Stat("./public/xlsx/"); os.IsNotExist(err) {
-		err := os.Mkdir("./public/xlsx/", 0755)
-		if err != nil {
-			c.Error(&gin.Error{Err: errors.New("创建文件夹失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-			utils.JsonErrorResponse(c, code.ServerError)
-			return
-		}
-	}
-	// 删除旧文件
-	if _, err := os.Stat(filePath); err == nil {
-		if err := os.Remove(filePath); err != nil {
-			c.Error(&gin.Error{Err: errors.New("删除旧文件失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-			utils.JsonErrorResponse(c, code.ServerError)
-			return
-		}
-	}
-	// 保存
-	if err := f.SaveAs(filePath); err != nil {
-		c.Error(&gin.Error{Err: errors.New("保存文件失败原因: " + err.Error()), Type: gin.ErrorTypeAny})
-		utils.JsonErrorResponse(c, code.ServerError)
-		return
-	}
-
-	utils.JsonSuccessResponse(c, service.GetConfigUrl()+"/public/xlsx/"+fileName)
+	utils.JsonSuccessResponse(c, url)
 }
