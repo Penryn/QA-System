@@ -10,7 +10,7 @@ import (
 )
 
 type LogData struct {
-	Num     int `form:"num" json:"num"`
+	Num     int `form:"num" json:"num" binding:"required"`
 	LogType int `form:"log_type" binding:"oneof=0 1 2 3 4"`
 }
 

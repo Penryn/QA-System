@@ -29,6 +29,7 @@ var (
 	SurveyNotExist        = NewError(http.StatusInternalServerError, 200515, "问卷不存在")
 	PermissionExist       = NewError(http.StatusInternalServerError, 200516, "该用户已有权限，请勿重复操作！")
 	PermissionBelong      = NewError(http.StatusInternalServerError, 200517, "问卷为该用户所有，无需操作！")
+	PermissionNotExist	  = NewError(http.StatusInternalServerError, 200518, "该用户无权限，请勿操作！")
 	NotInit               = NewError(http.StatusNotFound, 200404, http.StatusText(http.StatusNotFound))
 	NotFound              = NewError(http.StatusNotFound, 200404, http.StatusText(http.StatusNotFound))
 	Unknown               = NewError(http.StatusInternalServerError, 300500, "系统异常，请稍后重试!")

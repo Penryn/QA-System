@@ -10,8 +10,8 @@ import (
 )
 
 type CreatePermissionData struct {
-	UserName string `json:"username"`
-	SurveyID int    `json:"survey_id"`
+	UserName string `json:"username" binding:"required"`
+	SurveyID int    `json:"survey_id" binding:"required"`
 }
 
 func CreatrPermission(c *gin.Context) {
@@ -68,8 +68,8 @@ func CreatrPermission(c *gin.Context) {
 }
 
 type DeletePermissionData struct {
-	UserName string `form:"username"`
-	SurveyID int    `form:"survey_id"`
+	UserName string `form:"username" binding:"required"`
+	SurveyID int    `form:"survey_id" binding:"required"`
 }
 
 func DeletePermission(c *gin.Context) {
@@ -107,6 +107,13 @@ func DeletePermission(c *gin.Context) {
 	if survey.UserID == user.ID {
 		c.Error(&gin.Error{Err: errors.New("不能删除问卷所有者的权限"), Type: gin.ErrorTypeAny})
 		utils.JsonErrorResponse(c, code.PermissionBelong)
+		return
+	}
+	//查询权限
+	err = service.CheckPermission(user.ID, data.SurveyID)
+	if err != nil {
+		c.Error(&gin.Error{Err: errors.New("权限不存在"), Type: gin.ErrorTypeAny})
+		utils.JsonErrorResponse(c, code.PermissionNotExist)
 		return
 	}
 	//删除权限

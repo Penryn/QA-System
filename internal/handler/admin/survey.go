@@ -19,7 +19,7 @@ type CreateSurveyData struct {
 	Title     string         `json:"title"`
 	Desc      string         `json:"desc" `
 	Img       string         `json:"img" `
-	Status    int            `json:"status" `
+	Status    int            `json:"status" binding:"required,oneof=1 2"`
 	Time      string         `json:"time"`
 	Questions []dao.Question `json:"questions"`
 }
